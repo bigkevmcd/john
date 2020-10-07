@@ -1,4 +1,4 @@
-# John mailets for Go
+# John - mailets for Go
 
 This is a simple SMTP Server that can have a chain of mail processors inserted.
 

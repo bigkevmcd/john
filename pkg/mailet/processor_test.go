@@ -82,7 +82,7 @@ func makeTestMail() *Mail {
 		To:   []string{"test1@example.com"},
 		Message: mail.Message{
 			Header: mail.Header{},
-			Body:   strings.NewReader("From: test@example.com\nTo: test1@example.com\nSubject: testing\r\nTesting"),
+			Body:   strings.NewReader("From: test@example.com\nTo: test1@example.com\nSubject: testing\n\nTesting"),
 		},
 	}
 }

@@ -30,7 +30,7 @@ func makeHTTPCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			listen := fmt.Sprintf(":%d", viper.GetInt(portFlag))
 			log.Printf("listening on %s", listen)
-			logIfError(smtpd.ListenAndServe(listen, handler.MailetsHandler, "John SMTP", ""))
+			logIfError(smtpd.ListenAndServe(listen, handler.MakeHandler(), "John SMTP", ""))
 		},
 	}
 
