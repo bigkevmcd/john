@@ -43,6 +43,21 @@ func TestProcessMailetsWithAnError(t *testing.T) {
 	}
 }
 
+func TestProcessMailetsWithATerminationError(t *testing.T) {
+	mailets := []Mailet{
+		&stubMailet{name: "stub1", err: TerminateProcessing},
+		&stubMailet{name: "stub2"},
+	}
+
+	p := NewProcessor(mailets)
+	m := makeTestMail()
+	assertNoError(t, p.Handle(m))
+
+	if diff := cmp.Diff("stub1\n", string(m.Data)); diff != "" {
+		t.Fatalf("processing stubs failed:\n%s", diff)
+	}
+}
+
 type stubMailet struct {
 	name string
 	err  error
