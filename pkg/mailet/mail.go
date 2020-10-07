@@ -1,11 +1,14 @@
 package mailet
 
-import "net"
+import (
+	"net"
+	"net/mail"
+)
 
 // Mail represents incoming emails received by the SMTP server.
 type Mail struct {
 	RemoteAddr net.Addr
 	From       string
 	To         []string
-	Data       []byte
+	Message    mail.Message
 }
