@@ -2,8 +2,9 @@ package mailet
 
 import (
 	"errors"
-	"fmt"
 	"net"
+	"net/mail"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -20,7 +21,8 @@ func TestProcessMailets(t *testing.T) {
 
 	assertNoError(t, p.Handle(m))
 
-	if diff := cmp.Diff("stub1\nstub2\n", string(m.Data)); diff != "" {
+	want := []string{"stub1", "stub2"}
+	if diff := cmp.Diff(want, m.Message.Header["stubs"]); diff != "" {
 		t.Fatalf("processing stubs failed:\n%s", diff)
 	}
 }
@@ -38,7 +40,8 @@ func TestProcessMailetsWithAnError(t *testing.T) {
 		t.Fatal("failed to get an error handling mail")
 	}
 
-	if diff := cmp.Diff("stub1\n", string(m.Data)); diff != "" {
+	want := []string{"stub1"}
+	if diff := cmp.Diff(want, m.Message.Header["stubs"]); diff != "" {
 		t.Fatalf("processing stubs failed:\n%s", diff)
 	}
 }
@@ -53,7 +56,8 @@ func TestProcessMailetsWithATerminationError(t *testing.T) {
 	m := makeTestMail()
 	assertNoError(t, p.Handle(m))
 
-	if diff := cmp.Diff("stub1\n", string(m.Data)); diff != "" {
+	want := []string{"stub1"}
+	if diff := cmp.Diff(want, m.Message.Header["stubs"]); diff != "" {
 		t.Fatalf("processing stubs failed:\n%s", diff)
 	}
 }
@@ -64,7 +68,7 @@ type stubMailet struct {
 }
 
 func (s *stubMailet) Handle(m *Mail) error {
-	m.Data = append(m.Data, []byte(fmt.Sprintf("%s\n", s.name))...)
+	m.Message.Header["stubs"] = append(m.Message.Header["stubs"], s.name)
 	return s.err
 }
 
@@ -76,7 +80,10 @@ func makeTestMail() *Mail {
 		},
 		From: "test@example.com",
 		To:   []string{"test1@example.com"},
-		Data: []byte(""),
+		Message: mail.Message{
+			Header: mail.Header{},
+			Body:   strings.NewReader("From: test@example.com\nTo: test1@example.com\nSubject: testing\r\nTesting"),
+		},
 	}
 }
 

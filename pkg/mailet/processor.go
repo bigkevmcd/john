@@ -9,6 +9,8 @@ import (
 // procesing of the chain.
 var TerminateProcessing = errors.New("Terminate Processing")
 
+type MailetFunc func(m *Mail)
+
 // Processor applies a mail to each of the set of configured Mailets.
 type Processor struct {
 	mailets []Mailet

@@ -3,8 +3,10 @@ package maildir
 import (
 	"io/ioutil"
 	"net"
+	"net/mail"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/bigkevmcd/john/pkg/mailet"
@@ -16,16 +18,20 @@ var _ mailet.Mailet = (*MaildirMailet)(nil)
 func TestHandle(t *testing.T) {
 	base := tempDir(t)
 	mm := NewMaildirMailet(base)
-	data := "From: test@example.com\nTo: user@example.com\nSubject: Testing\n\nTesting email\n"
+	data := "From: test@example.com\nSubject: Testing\nTo: user@example.com\n\nTesting email\n"
+	m, err := mail.ReadMessage(strings.NewReader(data))
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	mail := &mailet.Mail{
 		RemoteAddr: &net.TCPAddr{
 			IP:   net.ParseIP("192.168.0.252"),
 			Port: 32001,
 		},
-		From: "test@example.com",
-		To:   []string{"user@example.com"},
-		Data: []byte(data),
+		From:    "test@example.com",
+		To:      []string{"user@example.com"},
+		Message: *m,
 	}
 
 	assertNoError(t, mm.Handle(mail))

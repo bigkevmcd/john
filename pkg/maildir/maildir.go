@@ -3,6 +3,9 @@ package maildir
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"net/mail"
+	"sort"
 
 	"github.com/emersion/go-maildir"
 
@@ -30,7 +33,14 @@ func (mm *MaildirMailet) Handle(m *mailet.Mail) error {
 	}
 	var b bytes.Buffer
 
-	if _, err := b.Write(m.Data); err != nil {
+	for _, k := range headerKeys(m.Message.Header) {
+		for _, mv := range m.Message.Header[k] {
+			fmt.Fprintf(&b, "%s: %s\n", k, mv)
+		}
+	}
+	fmt.Fprintln(&b) // Headers are separated from the body by a '\n'.
+
+	if _, err := io.Copy(&b, m.Message.Body); err != nil {
 		return fmt.Errorf("failed to write the message body to the buffer: %w", err)
 	}
 
@@ -38,4 +48,13 @@ func (mm *MaildirMailet) Handle(m *mailet.Mail) error {
 		return fmt.Errorf("failed to write the message body to the delivery: %w", err)
 	}
 	return d.Close()
+}
+
+func headerKeys(h mail.Header) []string {
+	keys := []string{}
+	for k := range h {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
 }
