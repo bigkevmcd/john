@@ -18,7 +18,7 @@ func TestHandle(t *testing.T) {
 	mm := NewMaildirMailet(base)
 	data := "From: test@example.com\nTo: user@example.com\nSubject: Testing\n\nTesting email\n"
 
-	mail := mailet.Mail{
+	mail := &mailet.Mail{
 		RemoteAddr: &net.TCPAddr{
 			IP:   net.ParseIP("192.168.0.252"),
 			Port: 32001,

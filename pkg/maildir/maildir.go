@@ -21,16 +21,19 @@ func NewMaildirMailet(dir string) *MaildirMailet {
 	return &MaildirMailet{path: dir}
 }
 
-func (mm *MaildirMailet) Handle(m mailet.Mail) error {
+func (mm *MaildirMailet) Handle(m *mailet.Mail) error {
 	d, err := maildir.NewDelivery(mm.path)
 	if err != nil {
 		return fmt.Errorf("failed to create a new delivery in %q: %w", mm.path, err)
 	}
 	var b bytes.Buffer
-	b.Write(m.Data)
+
+	if _, err := b.Write(m.Data); err != nil {
+		return fmt.Errorf("failed to write the message body to the buffer: %w", err)
+	}
 
 	if _, err := d.Write(b.Bytes()); err != nil {
-		return err
+		return fmt.Errorf("failed to write the message body to the delivery: %w", err)
 	}
 	return d.Close()
 }
