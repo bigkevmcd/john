@@ -9,6 +9,8 @@ import (
 	"github.com/bigkevmcd/john/pkg/mailet"
 )
 
+// TODO: support for identifying a path from the to email.
+
 // MaildirMailet is a handler that stores the received mails in a Maildir
 // directory.
 type MaildirMailet struct {
