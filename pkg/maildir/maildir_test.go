@@ -5,7 +5,6 @@ import (
 	"net"
 	"net/mail"
 	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -17,7 +16,8 @@ var _ mailet.Mailet = (*MaildirMailet)(nil)
 
 func TestHandle(t *testing.T) {
 	base := tempDir(t)
-	mm := NewMaildirMailet(base)
+	mm, err := New(base)
+	assertNoError(t, err)
 	data := "From: test@example.com\nSubject: Testing\nTo: user@example.com\n\nTesting email\n"
 	m, err := mail.ReadMessage(strings.NewReader(data))
 	if err != nil {
@@ -56,11 +56,6 @@ func tempDir(t *testing.T) string {
 	t.Helper()
 	dir, err := ioutil.TempDir(os.TempDir(), "john")
 	assertNoError(t, err)
-
-	// TODO: Should this move?
-	for _, v := range []string{"tmp", "new", "cur"} {
-		assertNoError(t, os.MkdirAll(filepath.Join(dir, v), 0700))
-	}
 
 	t.Cleanup(func() {
 		err := os.RemoveAll(dir)
