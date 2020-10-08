@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/bigkevmcd/john/pkg/maildir"
 	"github.com/mhale/smtpd"
 )
 
@@ -30,7 +31,9 @@ func makeHTTPCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			listen := fmt.Sprintf(":%d", viper.GetInt(portFlag))
 			log.Printf("listening on %s", listen)
-			logIfError(smtpd.ListenAndServe(listen, handler.MakeHandler(), "John SMTP", ""))
+			h, err := maildir.New("./tmp")
+			logIfError(err)
+			logIfError(smtpd.ListenAndServe(listen, handler.MakeHandler(h), "John SMTP", ""))
 		},
 	}
 
@@ -45,9 +48,7 @@ func makeHTTPCmd() *cobra.Command {
 
 // Execute is the main entry point into this component.
 func Execute() {
-	if err := makeHTTPCmd().Execute(); err != nil {
-		log.Fatal(err)
-	}
+	logIfError(makeHTTPCmd().Execute())
 }
 
 func logIfError(e error) {

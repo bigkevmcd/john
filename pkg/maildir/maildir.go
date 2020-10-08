@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"net/mail"
+	"os"
+	"path/filepath"
 	"sort"
 
 	"github.com/emersion/go-maildir"
@@ -20,10 +22,17 @@ type MaildirMailet struct {
 	path string
 }
 
-// NewMaildirMailet creates and returns a new MaildirMailet that writes mails to
+// New creates and returns a new MaildirMailet that writes mails to
 // the provided directory.
-func NewMaildirMailet(dir string) *MaildirMailet {
-	return &MaildirMailet{path: dir}
+func New(dir string) (*MaildirMailet, error) {
+	for _, v := range []string{"tmp", "new", "cur"} {
+		err := os.MkdirAll(filepath.Join(dir, v), 0700)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &MaildirMailet{path: dir}, nil
 }
 
 func (mm *MaildirMailet) Handle(m *mailet.Mail) error {
