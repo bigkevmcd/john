@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/bigkevmcd/john/pkg/handler"
+	"github.com/mhale/smtpd"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/bigkevmcd/john/pkg/maildir"
-	"github.com/mhale/smtpd"
+	"github.com/bigkevmcd/john/pkg/handler"
+	"github.com/bigkevmcd/john/pkg/mailet/maildir"
 )
 
 const (
