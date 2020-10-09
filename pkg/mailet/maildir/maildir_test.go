@@ -15,7 +15,7 @@ import (
 var _ mailet.Mailet = (*MaildirMailet)(nil)
 
 func TestHandle(t *testing.T) {
-	base := tempDir(t)
+	base := tempMaildir(t)
 	mm, err := New(base)
 	assertNoError(t, err)
 	data := "From: test@example.com\nSubject: Testing\nTo: user@example.com\n\nTesting email\n"
@@ -52,10 +52,11 @@ func TestHandle(t *testing.T) {
 	}
 }
 
-func tempDir(t *testing.T) string {
+func tempMaildir(t *testing.T) string {
 	t.Helper()
 	dir, err := ioutil.TempDir(os.TempDir(), "john")
 	assertNoError(t, err)
+	assertNoError(t, maildir.Dir(dir).Init())
 
 	t.Cleanup(func() {
 		err := os.RemoveAll(dir)
