@@ -16,8 +16,7 @@ var _ mailet.Mailet = (*MaildirMailet)(nil)
 
 func TestHandle(t *testing.T) {
 	base := tempMaildir(t)
-	mm, err := New(base)
-	assertNoError(t, err)
+	mm := New(base)
 	data := "From: test@example.com\nSubject: Testing\nTo: user@example.com\n\nTesting email\n"
 	m, err := mail.ReadMessage(strings.NewReader(data))
 	if err != nil {
