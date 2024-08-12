@@ -42,9 +42,7 @@ func TestHandle(t *testing.T) {
 		t.Fatalf("expected %d mails to be received, got %d", 1, c)
 	}
 
-	o, err := dir.Open(unseen[0])
-	assertNoError(t, err)
-	b, err := ioutil.ReadAll(o)
+	b, err := os.ReadFile(unseen[0].Filename())
 	assertNoError(t, err)
 	if c := string(b); c != data {
 		t.Fatalf("failed to write body, got %q, want %q", c, data)
