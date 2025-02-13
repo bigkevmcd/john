@@ -6,8 +6,35 @@ This is a simple SMTP Server that can have a chain of mail processors inserted, 
 
 ```shell
 $ go build ./cmd/john
-$ ./john smtp
+$ ./john smtp --init-maildir
 ```
+
+Mail will be delivered to `./tmp` in [Maildir](https://en.wikipedia.org/wiki/Maildir) format.
+
+## Can't use SMTP?
+
+It might be simpler to use HTTP to send emails.
+
+```shell
+$ ./john http --init-maildir
+```
+
+This defaults to serving on :8080
+
+You can send emails via `curl`
+
+```shell
+#!/bin/sh
+curl -d "Testing" \
+  -H "John-Envelope-From: testing@example.com" \
+  -H "John-Envelope-To: test@example.com" \
+  -H "John-Mail-From: testing@example.com" \
+  -H "John-Mail-To: test@example.com" \
+  -H "John-Mail-Test-Header: this is a test" \
+  http://localhost:8080/
+```
+
+Again mail will be delivered to `./tmp` in [Maildir](https://en.wikipedia.org/wiki/Maildir) format.
 
 ## Testing mail delivery
 
